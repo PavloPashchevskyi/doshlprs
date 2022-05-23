@@ -5,7 +5,11 @@
 #include "./MENU/MENU.HPP"
 #include "./MENU/MCONTROL.HPP"
 
+#include "./FOREXEC/FOREXEC.HPP"
+#include "./FOREXEC/FEREADER.HPP"
+
 void onGraphicItemSelect();
+void onYourGraphicItemSelect();
 void onHistogramItemSelect();
 void onGraphicSeparatelyItemSelect();
 
@@ -24,6 +28,7 @@ void buildGraphicalMenu() {
   MenuItem("about", "About"),
   MenuItem("some", "Some"),
   MenuItem("graphic", "Graphic"),
+  MenuItem("yourgraph", "Your graph"),
   MenuItem("histogram", "Histogram"),
   MenuItem("graphsep", "Graph only"),
   MenuItem("exit", "Exit")
@@ -31,9 +36,10 @@ void buildGraphicalMenu() {
  items[0].setOnSelectAction(onAboutItemSelect);
  items[1].setOnSelectAction(onSomeItemSelect);
  items[2].setOnSelectAction(onGraphicItemSelect);
- items[3].setOnSelectAction(onHistogramItemSelect);
- items[4].setOnSelectAction(onGraphicSeparatelyItemSelect);
- Menu grMenu(items, 6);
+ items[3].setOnSelectAction(onYourGraphicItemSelect);
+ items[4].setOnSelectAction(onHistogramItemSelect);
+ items[5].setOnSelectAction(onGraphicSeparatelyItemSelect);
+ Menu grMenu(items, 7);
  grMenu.show();
  if (i < 2) {
   MControl ctrl(grMenu);
@@ -45,6 +51,57 @@ void onGraphicItemSelect() {
  Plane2D axes(0, 16, 1, 0, 4, GREEN, WHITE, 1, 1);
  axes.addGraphic(sqrt);
  char c = getch();
+ if (c == 27) {
+  cleardevice();
+  buildGraphicalMenu();
+ }
+}
+
+void onYourGraphicItemSelect() {
+ char expression[128];
+ double from, to, step, *breakPoints = NULL;
+ unsigned breakPointsQuantity = 0;
+ cleardevice();
+ printf("Input formula in the format of y = f(x) with C language syntax:\n");
+ printf("y = f(x) = ");
+ scanf("%s", &expression);
+ printf("Which range and step you would like to research this function?\n");
+ printf("Left border (including into range): ");
+ scanf("%lf", &from);
+ printf("Right border (NOT in range): ");
+ scanf("%lf", &to);
+ printf("Step (difference between two the nearest values): ");
+ scanf("%lf", &step);
+ printf("Does the function have breakpoints in range you have input?\n");
+ char c = getch();
+ if (c == 'y' || c == 'Y' || c == '¤' || c == '„') {
+  printf("How many breakpoints has function in range [%f; %f)? ", from, to);
+  scanf("%d", &breakPointsQuantity);
+  if (breakPointsQuantity > 0) {
+   breakPoints = new double[breakPointsQuantity];
+   for (unsigned i = 0; i < breakPointsQuantity; i++) {
+    printf("Please, input breakpoint #%d: ", i + 1);
+    scanf("%lf", (breakPoints+i));
+   }
+  }
+ }
+
+ cleardevice();
+
+ ForExec fe(".\\forexec\\");
+ fe.setFormula(expression);
+ fe.execute(from, to, step, breakPoints, breakPointsQuantity);
+
+ FEReader fer(".\\fe_res.txt");
+
+ Plane2D plane2D(fer.getXFrom(), fer.getXTo(), fer.getXStep(), fer.getYFrom(), fer.getYTo());
+ plane2D.addGraphic(fer.getY(), breakPoints, breakPointsQuantity);
+
+ if (breakPointsQuantity > 0) {
+  delete [] breakPoints;
+ }
+
+ c = getch();
  if (c == 27) {
   cleardevice();
   buildGraphicalMenu();
