@@ -167,12 +167,27 @@ class Graphic : public Plotable {
    int lineThickness = 1
   ) {
    GrMode::initGraphicalMode();
-   valuesQuantity = (unsigned) (fabs(xTo - xFrom) / xStep);
+   setBreakPoints(bps, bpq);
+   valuesQuantity = (unsigned) ((fabs(xTo - xFrom) / xStep) - bpq + 1);
    this->X = new double[valuesQuantity];
    this->Y = new double[valuesQuantity];
-   for (unsigned i = 0; i < valuesQuantity; i++) {
-    X[i] = xFrom + i * xStep;
+   unsigned i = 0;
+   for (double h = xFrom; h < xTo; h += xStep) {
+    if (breakPointsQuantity > 0) {
+     unsigned b = 0;
+     for (unsigned j = 0; j < breakPointsQuantity; j++) {
+      if (fabs(h - breakPoints[j]) < Graphic::accuracy) {
+       b = 1;
+       break;
+      }
+     }
+     if (b == 1) {
+      continue;
+     }
+    }
+    X[i] = h;
     this->Y[i] = Y[i];
+    i++;
    }
    xTranslationAddition = 319.;
    xStretchFactor = 78.875;
@@ -181,7 +196,6 @@ class Graphic : public Plotable {
    this->color = color;
    this->lineStyle = lineStyle;
    this->lineThickness = lineThickness;
-   setBreakPoints(bps, bpq);
    Graphic::graphicsQuantity++;
   }
   Graphic(
