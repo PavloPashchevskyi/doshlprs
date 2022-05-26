@@ -172,7 +172,7 @@ class Graphic : public Plotable {
    this->X = new double[valuesQuantity];
    this->Y = new double[valuesQuantity];
    unsigned i = 0;
-   for (double h = xFrom; h < xTo; h += xStep) {
+   for (double h = xFrom; h <= xTo; h += xStep) {
     if (breakPointsQuantity > 0) {
      unsigned b = 0;
      for (unsigned j = 0; j < breakPointsQuantity; j++) {
