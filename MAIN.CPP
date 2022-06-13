@@ -1,6 +1,8 @@
 #include "./GRAPHIC/PLANE2D.HPP"
 #include "./GRAPHIC/PLANEHIST.HPP"
 #include "./GRAPHIC/GRAPHIC.HPP"
+#include "./GRAPHIC/GMANAGER.HPP"
+#include "./GRAPHIC/GCONTROL.HPP"
 
 #include "./MENU/MENU.HPP"
 #include "./MENU/MCONTROL.HPP"
@@ -48,8 +50,12 @@ void buildGraphicalMenu() {
 
 void onGraphicItemSelect() {
  cleardevice();
- Plane2D axes(0, 16, 1, 0, 4, GREEN, WHITE, 1, 1);
- axes.addGraphic(sqrt);
+ Plane2D axes(-3.141593, 3.141593, 0.261799, -1, 1, GREEN, WHITE, 1, 1);
+ axes.addGraphic(sin);
+
+ GManager gm(&axes);
+ GControl gc(&gm);
+
  char c = getch();
  if (c == 27) {
   cleardevice();
@@ -151,16 +157,11 @@ void onGraphicSeparatelyItemSelect() {
  grSep.setYStretchFactor(235.5);
  grSep.plot();
 
-
  char c = getch();
  if (c == 27) {
   cleardevice();
   buildGraphicalMenu();
  }
-}
-
-double invertProp(double x) {
- return 1. / x;
 }
 
 int main() {

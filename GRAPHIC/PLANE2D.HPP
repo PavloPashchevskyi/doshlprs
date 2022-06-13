@@ -3,9 +3,8 @@
 
 #include <stdio.h>
 #include <conio.h>
-#include <math.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include <graphics.h>
 
 #include "./GRAPHIC/GRAPHIC.HPP"
@@ -297,32 +296,70 @@ class Plane2D {
    delete [] graphics;
    return (Graphic::getGraphicsQuantity() == 0);
   }
-  void moveLeft() {
-   horizFrom = horizFrom - horizStep;
-   horizTo = horizTo - horizStep;
-   double **newYs = new double*[graphicsQuantity];
-   for (unsigned i = 0; i < graphicsQuantity; i++) {
-    newYs[i] = new double[graphics[i]->getValuesQuantity()];
-    graphics[i]->shiftXLeft(horizStep, newYs[i]);
+  Graphic** getGraphics() {
+   return graphics;
+  }
+  Graphic* getGraphic(unsigned i) {
+   return graphics[i];
+  }
+  double getScaleFactor() {
+   double maxScaleFactor = 3.4e-308;
+   for (unsigned i = 0; i < Graphic::getGraphicsQuantity(); i++) {
+    if (graphics[i]->getScaleFactor() > maxScaleFactor) {
+     maxScaleFactor = graphics[i]->getScaleFactor();
+    }
    }
+   return maxScaleFactor;
   }
-  void moveRight() {
-   horizFrom = horizFrom + horizStep;
-   horizTo = horizTo + horizStep;
+  unsigned getGraphicsQuantity() {
+   return Graphic::getGraphicsQuantity();
   }
-  void moveDown() {
-   verticalFrom = verticalFrom - horizStep;
-   verticalTo = verticalTo - horizStep;
+  double getXFrom() {
+   return horizFrom;
   }
-  void moveUp() {
-   verticalFrom = verticalFrom + horizStep;
-   verticalTo = verticalTo + horizStep;
+  void setXFrom(double xFrom) {
+   horizFrom = xFrom;
   }
-  void increaseScale() {
-   scaleFactor *= 0.125;
+  double getXTo() {
+   return horizTo;
   }
-  void decreaseScale() {
-   scaleFactor *= 1.125;
+  void setXTo(double xTo) {
+   horizTo = xTo;
+  }
+  double getXStep() {
+   return horizStep;
+  }
+  void setXStep(double xStep) {
+   horizStep = xStep;
+  }
+  double getYFrom() {
+   return verticalFrom;
+  }
+  void setYFrom(double yFrom) {
+   verticalFrom = yFrom;
+  }
+  double getYTo() {
+   return verticalTo;
+  }
+  void setYTo(double yTo) {
+   horizTo = yTo;
+  }
+  double calculateMinYStep() {
+   double minStep = 3.4e+308, step, *Y;
+   unsigned grValuesQuantity;
+   for (unsigned i = 0; i < graphicsQuantity; i++) {
+    grValuesQuantity = graphics[i]->getValuesQuantity();
+    Y = graphics[i]->getY();
+    for (unsigned j = 0; j < grValuesQuantity; j++) {
+     for (unsigned k = j + 1; k < grValuesQuantity; k++) {
+      step = fabs(Y[k] - Y[j]);
+      if (step < minStep) {
+       minStep = step;
+      }
+     }
+    }
+   }
+   return minStep;
   }
   void redraw() {
    cleardevice();
