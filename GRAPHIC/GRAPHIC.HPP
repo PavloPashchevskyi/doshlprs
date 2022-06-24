@@ -298,6 +298,72 @@ class Graphic : public Plotable {
    scaleFactor = this->getMaxScaleFactor();
    Graphic::graphicsQuantity++;
   }
+  Graphic(const Graphic &right) {
+   setBreakPoints(right.breakPoints, right.breakPointsQuantity);
+   this->F = right.F;
+   this->valuesQuantity = right.valuesQuantity;
+   this->X = new double[valuesQuantity];
+   this->Y = new double[valuesQuantity];
+   for (unsigned i = 0; i < valuesQuantity; i++) {
+    this->X[i] = right.X[i];
+    this->Y[i] = right.Y[i];
+   }
+   this->xFrom = right.xFrom;
+   this->xTo = right.xTo;
+   this->xStep = right.xStep;
+   this->yFrom = right.yFrom;
+   this->yTo = right.yTo;
+   this->yStep = right.yStep;
+   this->xTranslationAddition = right.xTranslationAddition;
+   this->xStretchFactor = right.xStretchFactor;
+   this->yTranslationAddition = right.yTranslationAddition;
+   this->yStretchFactor = right.yStretchFactor;
+   this->color = right.color;
+   this->lineStyle = right.lineStyle;
+   this->lineThickness = right.lineThickness;
+   this->scaleFactor = right.scaleFactor;
+   Graphic::graphicsQuantity++;
+  }
+  Graphic& operator =(const Graphic &right) {
+   if (X != NULL || Y != NULL) {
+    Graphic::graphicsQuantity--;
+   }
+   if(X != NULL) {
+    delete [] this->X;
+   }
+   if (Y != NULL) {
+    delete [] this->Y;
+   }
+   if (breakPoints != NULL) {
+    delete [] breakPoints;
+   }
+   setBreakPoints(right.breakPoints, right.breakPointsQuantity);
+   this->F = right.F;
+   this->valuesQuantity = right.valuesQuantity;
+   this->X = new double[valuesQuantity];
+   this->Y = new double[valuesQuantity];
+   for (unsigned i = 0; i < valuesQuantity; i++) {
+    this->X[i] = right.X[i];
+    this->Y[i] = right.Y[i];
+   }
+   this->xFrom = right.xFrom;
+   this->xTo = right.xTo;
+   this->xStep = right.xStep;
+   this->yFrom = right.yFrom;
+   this->yTo = right.yTo;
+   this->yStep = right.yStep;
+   this->xTranslationAddition = right.xTranslationAddition;
+   this->xStretchFactor = right.xStretchFactor;
+   this->yTranslationAddition = right.yTranslationAddition;
+   this->yStretchFactor = right.yStretchFactor;
+   this->color = right.color;
+   this->lineStyle = right.lineStyle;
+   this->lineThickness = right.lineThickness;
+   this->scaleFactor = right.scaleFactor;
+   Graphic::graphicsQuantity++;
+
+   return *this;
+  }
   unsigned getValuesQuantity() {
    return valuesQuantity;
   }
@@ -346,11 +412,15 @@ class Graphic : public Plotable {
    double *bps = NULL,
    unsigned bpq = 0
   ) {
+   double *x, *y;
    setBreakPoints(bps, bpq);
    this->xFrom = xFrom;
    this->xTo = xTo;
    this->xStep = xStep;
    F = f;
+   valuesQuantity = (unsigned) ((fabs(xTo - xFrom) / xStep) - bpq + 1);
+   x = new double[valuesQuantity];
+   y = new double[valuesQuantity];
    unsigned i = 0;
    for (double h = xFrom; h <= xTo; h += xStep) {
     if (bpq > 0) {
@@ -365,10 +435,14 @@ class Graphic : public Plotable {
       continue;
      }
     }
-    X[i] = h;
-    Y[i] = F(X[i]);
+    x[i] = h;
+    y[i] = F(x[i]);
     i++;
    }
+   delete [] X;
+   delete [] Y;
+   X = x;
+   Y = y;
    if (!isSorted()) {
     sort();
    }
@@ -432,6 +506,8 @@ class Graphic : public Plotable {
    delete [] Y;
    X = x;
    Y = y;
+   xFrom -= xStep;
+   xTo -= xStep;
    if (!isSorted()) {
     sort();
    }
@@ -448,6 +524,8 @@ class Graphic : public Plotable {
    delete [] Y;
    X = x;
    Y = y;
+   xFrom += xStep;
+   xTo += xStep;
    if (!isSorted()) {
     sort();
    }
@@ -464,6 +542,8 @@ class Graphic : public Plotable {
    delete [] Y;
    X = x;
    Y = y;
+   xFrom += xStep;
+   xTo += xStep;
    if (!isSorted()) {
     sort();
    }
@@ -480,20 +560,28 @@ class Graphic : public Plotable {
    delete [] Y;
    X = x;
    Y = y;
+   xFrom -= xStep;
+   xTo -= xStep;
    if (!isSorted()) {
     sort();
    }
   }
   void increaseScale() {
-   scaleFactor = this->getMaxScaleFactor();
-   xStep *= (scaleFactor * xTo - xFrom) / (xTo - xFrom);
-   xTo = (fabs(scaleFactor) < 1) ? xTo * scaleFactor : xTo / scaleFactor;
+   double factor = this->getMaxScaleFactor();
+   scaleFactor = factor;
+   double newXTo = (fabs(factor) < 1) ? xTo * factor : xTo / factor;
+   double newXStep = (fabs(newXTo - xFrom) * xStep) / fabs(xTo - xFrom);
+   xTo = newXTo;
+   xStep = newXStep;
    setFunction(xFrom, xTo, xStep, F, breakPoints, breakPointsQuantity);
   }
   void decreaseScale() {
-   scaleFactor = this->getMaxScaleFactor();
-   xStep *= (scaleFactor * xTo - xFrom) / (xTo - xFrom);
-   xTo = (fabs(scaleFactor) < 1) ? xTo / scaleFactor : xTo * scaleFactor;
+   double factor = this->getMaxScaleFactor();
+   scaleFactor = factor;
+   double newXTo = (fabs(factor) < 1) ? xTo / factor : xTo * factor;
+   double newXStep = (fabs(newXTo - xFrom) * xStep) / fabs(xTo - xFrom);
+   xTo = newXTo;
+   xStep = newXStep;
    setFunction(xFrom, xTo, xStep, F, breakPoints, breakPointsQuantity);
   }
   ~Graphic() {

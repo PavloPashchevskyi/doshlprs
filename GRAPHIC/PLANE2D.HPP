@@ -62,6 +62,7 @@ class Plane2D {
     exit(1);
    }
    setcolor(color);
+   setlinestyle(SOLID_LINE, 1, 1);
    line(xhb, yhb, xhe, yhe);
    line(xvb, yvb, xve, yve);
   }
@@ -134,7 +135,7 @@ class Plane2D {
   }
   int toXScreenCoordinate(double x) {
    double xScale = calculateXScale();
-    return (int) (xNegativeAxeEnd + x * xScale);
+   return (int) (xNegativeAxeEnd + x * xScale);
   }
   double calculateYScale() {
    return (getmaxy() - ((yTailPresent) ? Plane2D::axesMargin : 0)) /
@@ -196,7 +197,7 @@ class Plane2D {
    );
    scaleFactor = 1.000000;
   }
-  Plane2D(Plane2D &right) {
+  Plane2D(const Plane2D &right) {
    horizFrom = right.horizFrom;
    horizTo = right.horizTo;
    horizStep = right.horizStep;
@@ -213,8 +214,22 @@ class Plane2D {
    quantStepFactor = right.quantStepFactor;
    strcpy(horizontalAxeName, right.horizontalAxeName);
    strcpy(verticalAxeName, this->verticalAxeName);
+   graphicsQuantity = right.graphicsQuantity;
+   graphics = new Graphic*[graphicsQuantity];
+   for (unsigned i = 0; i < graphicsQuantity; i++) {
+    graphics[i] = right.graphics[i];
+   }
   }
-  Plane2D& operator=(Plane2D &right) {
+  Plane2D& operator=(const Plane2D &right) {
+   if (graphics != NULL) {
+    for (unsigned i = 0; i < graphicsQuantity; i++) {
+     if (graphics[i] != NULL) {
+      delete graphics[i];
+     }
+    }
+    delete [] graphics;
+    graphicsQuantity = 0;
+   }
    horizFrom = right.horizFrom;
    horizTo = right.horizTo;
    horizStep = right.horizStep;
@@ -231,6 +246,11 @@ class Plane2D {
    quantStepFactor = right.quantStepFactor;
    strcpy(horizontalAxeName, right.horizontalAxeName);
    strcpy(verticalAxeName, this->verticalAxeName);
+   graphicsQuantity = right.graphicsQuantity;
+   graphics = new Graphic*[graphicsQuantity];
+   for (unsigned i = 0; i < graphicsQuantity; i++) {
+    graphics[i] = right.graphics[i];
+   }
 
    return *this;
   }
@@ -371,7 +391,13 @@ class Plane2D {
     verticalAxeName
    );
    drawAxes(axesColor);
+   double xScale = calculateXScale(), yScale = calculateYScale();
    for (unsigned i = 0; i < Graphic::getGraphicsQuantity(); i++) {
+    graphics[i]->setXTranslationAddition(xNegativeAxeEnd);
+    graphics[i]->setXStretchFactor(xScale);
+    graphics[i]->setYTranslationAddition(yNegativeAxeEnd);
+    graphics[i]->setYStretchFactor(-yScale);
+
     graphics[i]->plot();
    }
   }

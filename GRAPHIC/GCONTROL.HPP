@@ -31,10 +31,6 @@ class GControl {
      case 115: { // s
       gManager->decreaseScale();
      } break;
-     case 97: { // a
-     } break;
-     case 100: { // d
-     } break;
     }
     gManager->redraw();
    } while (c != 27);

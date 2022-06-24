@@ -40,16 +40,20 @@ class GManager {
   }
   void increaseScale() {
    double factor = plane2D->getScaleFactor();
-   plane2D->setXTo(plane2D->getXTo() * factor);
-   plane2D->setXStep(plane2D->getXStep() * ((factor * plane2D->getXTo() - plane2D->getXFrom()) / (plane2D->getXTo() - plane2D->getXFrom())));
+   double newXTo = plane2D->getXTo() / factor;
+   double newXStep = (fabs(newXTo - plane2D->getXFrom()) * plane2D->getXStep()) / fabs(plane2D->getXTo() - plane2D->getXFrom());
+   plane2D->setXTo(newXTo);
+   plane2D->setXStep(newXStep);
    for (unsigned i = 0; i < plane2D->getGraphicsQuantity(); i++) {
     plane2D->getGraphic(i)->increaseScale();
    }
   }
   void decreaseScale() {
    double factor = plane2D->getScaleFactor();
-   plane2D->setXTo(plane2D->getXTo() / factor);
-   plane2D->setXStep(plane2D->getXStep() * ((factor * plane2D->getXTo() - plane2D->getXFrom()) / (plane2D->getXTo() - plane2D->getXFrom())));
+   double newXTo = plane2D->getXTo() * factor;
+   double newXStep = (fabs(newXTo - plane2D->getXFrom()) * plane2D->getXStep()) / fabs(plane2D->getXTo() - plane2D->getXFrom());
+   plane2D->setXTo(newXTo);
+   plane2D->setXStep(newXStep);
    for (unsigned i = 0; i < plane2D->getGraphicsQuantity(); i++) {
     plane2D->getGraphic(i)->decreaseScale();
    }
