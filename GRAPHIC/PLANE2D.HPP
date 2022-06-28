@@ -266,18 +266,27 @@ class Plane2D {
    for (unsigned i = 0; i < grPointsQ; i++) {
     X[i] = horizFrom + i * horizStep;
    }
+   unsigned oldGraphicsQuantity = Graphic::getGraphicsQuantity();
+   Graphic **grcs;
    graphicsQuantity = Graphic::getGraphicsQuantity() + 1;
-   graphics = new Graphic*[graphicsQuantity];
+   grcs = new Graphic*[graphicsQuantity];
    for (i = 0; i < graphicsQuantity; i++) {
-    graphics[i] = new Graphic(X, f, grPointsQ, breakPoints, bpq, color);
+    grcs[i] = new Graphic(X, f, grPointsQ, breakPoints, bpq, color);
 
-    graphics[i]->setXTranslationAddition(xNegativeAxeEnd);
-    graphics[i]->setXStretchFactor(xScale);
-    graphics[i]->setYTranslationAddition(yNegativeAxeEnd);
-    graphics[i]->setYStretchFactor(-yScale);
+    grcs[i]->setXTranslationAddition(xNegativeAxeEnd);
+    grcs[i]->setXStretchFactor(xScale);
+    grcs[i]->setYTranslationAddition(yNegativeAxeEnd);
+    grcs[i]->setYStretchFactor(-yScale);
 
-    graphics[i]->plot();
+    grcs[i]->plot();
    }
+   for (i = 0; i < oldGraphicsQuantity; i++) {
+    delete graphics[i];
+   }
+   if (oldGraphicsQuantity > 0) {
+    delete [] graphics;
+   }
+   graphics = grcs;
   }
   void addGraphic(
    double *Y,
@@ -286,18 +295,27 @@ class Plane2D {
    unsigned color = YELLOW
   ) {
    double xScale = calculateXScale(), yScale = calculateYScale();
+   unsigned oldGraphicsQuantity = Graphic::getGraphicsQuantity();
+   Graphic **grcs;
    graphicsQuantity = Graphic::getGraphicsQuantity() + 1;
-   graphics = new Graphic*[graphicsQuantity];
+   grcs = new Graphic*[graphicsQuantity];
    for (unsigned i = 0; i < graphicsQuantity; i++) {
-    graphics[i] = new Graphic(horizFrom, horizTo, horizStep, Y, breakPoints, bpq, color);
+    grcs[i] = new Graphic(horizFrom, horizTo, horizStep, Y, breakPoints, bpq, color);
 
-    graphics[i]->setXTranslationAddition(xNegativeAxeEnd);
-    graphics[i]->setXStretchFactor(xScale);
-    graphics[i]->setYTranslationAddition(yNegativeAxeEnd);
-    graphics[i]->setYStretchFactor(-yScale);
+    grcs[i]->setXTranslationAddition(xNegativeAxeEnd);
+    grcs[i]->setXStretchFactor(xScale);
+    grcs[i]->setYTranslationAddition(yNegativeAxeEnd);
+    grcs[i]->setYStretchFactor(-yScale);
 
-    graphics[i]->plot();
+    grcs[i]->plot();
    }
+   for (i = 0; i < oldGraphicsQuantity; i++) {
+    delete graphics[i];
+   }
+   if (oldGraphicsQuantity > 0) {
+    delete [] graphics;
+   }
+   graphics = grcs;
   }
   unsigned deleteGraphic(unsigned i) {
    if (i >= graphicsQuantity) {
