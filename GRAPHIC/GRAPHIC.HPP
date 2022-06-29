@@ -70,26 +70,6 @@ class Graphic : public Plotable {
    return maxX;
   }
 
-  double getMinY() {
-   double min = 3.4e+38;
-   for (unsigned i = 0; i < valuesQuantity; i++) {
-    if (Y[i] < min) {
-     min = Y[i];
-    }
-   }
-   return min;
-  }
-
-  double getMaxY() {
-   double max = 3.4e-38;
-   for (unsigned i = 0; i < valuesQuantity; i++) {
-    if (Y[i] > max) {
-     max = Y[i];
-    }
-   }
-   return max;
-  }
-
   double getMinXStep() {
    double minStep = 3.4e+38;
    for (unsigned i = 0; i < valuesQuantity; i++) {
@@ -465,6 +445,24 @@ class Graphic : public Plotable {
   }
   double* getY() {
    return Y;
+  }
+  double getMinY() {
+   double min = 3.4e+38;
+   for (unsigned i = 0; i < valuesQuantity; i++) {
+    if (Y[i] < min) {
+     min = Y[i];
+    }
+   }
+   return min;
+  }
+  double getMaxY() {
+   double max = 3.4e-38;
+   for (unsigned i = 0; i < valuesQuantity; i++) {
+    if (Y[i] > max) {
+     max = Y[i];
+    }
+   }
+   return max;
   }
   unsigned getBreakPointsQuantity() {
    return breakPointsQuantity;

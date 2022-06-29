@@ -16,6 +16,8 @@ class GManager {
    for (unsigned i = 0; i < plane2D->getGraphicsQuantity(); i++) {
     plane2D->getGraphic(i).moveLeft();
    }
+   plane2D->setYFromToMin();
+   plane2D->setYToToMax();
   }
   void moveRight() {
    plane2D->setXFrom(plane2D->getXFrom() + plane2D->getXStep());
@@ -23,6 +25,8 @@ class GManager {
    for (unsigned i = 0; i < plane2D->getGraphicsQuantity(); i++) {
     plane2D->getGraphic(i).moveRight();
    }
+   plane2D->setYFromToMin();
+   plane2D->setYToToMax();
   }
   void moveUp() {
    plane2D->setXFrom(plane2D->getXFrom() + plane2D->getXStep());
@@ -30,6 +34,8 @@ class GManager {
    for (unsigned i = 0; i < plane2D->getGraphicsQuantity(); i++) {
     plane2D->getGraphic(i).moveUp();
    }
+   plane2D->setYFromToMin();
+   plane2D->setYToToMax();
   }
   void moveDown() {
    plane2D->setXFrom(plane2D->getXFrom() - plane2D->getXStep());
@@ -37,6 +43,8 @@ class GManager {
    for (unsigned i = 0; i < plane2D->getGraphicsQuantity(); i++) {
     plane2D->getGraphic(i).moveDown();
    }
+   plane2D->setYFromToMin();
+   plane2D->setYToToMax();
   }
   void increaseScale() {
    double factor = plane2D->getScaleFactor();
@@ -47,6 +55,8 @@ class GManager {
    for (unsigned i = 0; i < plane2D->getGraphicsQuantity(); i++) {
     plane2D->getGraphic(i).increaseScale();
    }
+   plane2D->setYFromToMin();
+   plane2D->setYToToMax();
   }
   void decreaseScale() {
    double factor = plane2D->getScaleFactor();
@@ -57,6 +67,8 @@ class GManager {
    for (unsigned i = 0; i < plane2D->getGraphicsQuantity(); i++) {
     plane2D->getGraphic(i).decreaseScale();
    }
+   plane2D->setYFromToMin();
+   plane2D->setYToToMax();
   }
   unsigned deleteGraphic(unsigned n) {
    return plane2D->deleteGraphic(n);

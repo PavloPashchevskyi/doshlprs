@@ -378,6 +378,24 @@ class Plane2D {
   void setYTo(double yTo) {
    horizTo = yTo;
   }
+  void setYFromToMin() {
+   double min = 3.4e+308;
+   for (unsigned i = 0; i < Graphic::getGraphicsQuantity(); i++) {
+    if (graphics[i].getMinY() < min) {
+     min = graphics[i].getMinY();
+    }
+   }
+   verticalFrom = min;
+  }
+  void setYToToMax() {
+   double max = 3.4e-308;
+   for (unsigned i = 0; i < Graphic::getGraphicsQuantity(); i++) {
+    if (graphics[i].getMaxY() > max) {
+     max = graphics[i].getMaxY();
+    }
+   }
+   verticalTo = max;
+  }
   double calculateMinYStep() {
    double minStep = 3.4e+308, step, *Y;
    unsigned grValuesQuantity;
