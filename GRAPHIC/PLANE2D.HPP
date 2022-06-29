@@ -17,7 +17,7 @@ class Plane2D {
   char horizontalAxeName[2], verticalAxeName[7];
   static const int axeTagsMargin;
   static const double accuracy;
-  Graphic **graphics;
+  Graphic *graphics;
   unsigned graphicsQuantity;
 
   void drawAxes(int color) {
@@ -143,7 +143,6 @@ class Plane2D {
   }
   int toYScreenCoordinate(double y) {
    double yScale = calculateYScale();
-    //yScale = yScale * scaleFactor;
     return (int) (yNegativeAxeEnd - y * yScale);
   }
  public:
@@ -215,18 +214,13 @@ class Plane2D {
    strcpy(horizontalAxeName, right.horizontalAxeName);
    strcpy(verticalAxeName, this->verticalAxeName);
    graphicsQuantity = right.graphicsQuantity;
-   graphics = new Graphic*[graphicsQuantity];
+   graphics = new Graphic[graphicsQuantity];
    for (unsigned i = 0; i < graphicsQuantity; i++) {
     graphics[i] = right.graphics[i];
    }
   }
   Plane2D& operator=(const Plane2D &right) {
-   if (graphics != NULL) {
-    for (unsigned i = 0; i < graphicsQuantity; i++) {
-     if (graphics[i] != NULL) {
-      delete graphics[i];
-     }
-    }
+   if (graphicsQuantity > 0) {
     delete [] graphics;
     graphicsQuantity = 0;
    }
@@ -247,7 +241,7 @@ class Plane2D {
    strcpy(horizontalAxeName, right.horizontalAxeName);
    strcpy(verticalAxeName, this->verticalAxeName);
    graphicsQuantity = right.graphicsQuantity;
-   graphics = new Graphic*[graphicsQuantity];
+   graphics = new Graphic[graphicsQuantity];
    for (unsigned i = 0; i < graphicsQuantity; i++) {
     graphics[i] = right.graphics[i];
    }
@@ -267,22 +261,22 @@ class Plane2D {
     X[i] = horizFrom + i * horizStep;
    }
    unsigned oldGraphicsQuantity = Graphic::getGraphicsQuantity();
-   Graphic **grcs;
+   Graphic *grcs;
    graphicsQuantity = Graphic::getGraphicsQuantity() + 1;
-   grcs = new Graphic*[graphicsQuantity];
-   for (i = 0; i < graphicsQuantity; i++) {
-    grcs[i] = new Graphic(X, f, grPointsQ, breakPoints, bpq, color);
-
-    grcs[i]->setXTranslationAddition(xNegativeAxeEnd);
-    grcs[i]->setXStretchFactor(xScale);
-    grcs[i]->setYTranslationAddition(yNegativeAxeEnd);
-    grcs[i]->setYStretchFactor(-yScale);
-
-    grcs[i]->plot();
-   }
+   grcs = new Graphic[graphicsQuantity];
    for (i = 0; i < oldGraphicsQuantity; i++) {
-    delete graphics[i];
+    grcs[i] = graphics[i];
    }
+   i = graphicsQuantity - 1;
+   Graphic grc(X, f, grPointsQ, breakPoints, bpq, color);
+   grcs[i] = grc;
+
+   grcs[i].setXTranslationAddition(xNegativeAxeEnd);
+   grcs[i].setXStretchFactor(xScale);
+   grcs[i].setYTranslationAddition(yNegativeAxeEnd);
+   grcs[i].setYStretchFactor(-yScale);
+
+   grcs[i].plot();
    if (oldGraphicsQuantity > 0) {
     delete [] graphics;
    }
@@ -296,55 +290,61 @@ class Plane2D {
   ) {
    double xScale = calculateXScale(), yScale = calculateYScale();
    unsigned oldGraphicsQuantity = Graphic::getGraphicsQuantity();
-   Graphic **grcs;
+   Graphic *grcs;
    graphicsQuantity = Graphic::getGraphicsQuantity() + 1;
-   grcs = new Graphic*[graphicsQuantity];
-   for (unsigned i = 0; i < graphicsQuantity; i++) {
-    grcs[i] = new Graphic(horizFrom, horizTo, horizStep, Y, breakPoints, bpq, color);
-
-    grcs[i]->setXTranslationAddition(xNegativeAxeEnd);
-    grcs[i]->setXStretchFactor(xScale);
-    grcs[i]->setYTranslationAddition(yNegativeAxeEnd);
-    grcs[i]->setYStretchFactor(-yScale);
-
-    grcs[i]->plot();
+   grcs = new Graphic[graphicsQuantity];
+   for (unsigned i = 0; i < oldGraphicsQuantity; i++) {
+    grcs[i] = graphics[i];
    }
-   for (i = 0; i < oldGraphicsQuantity; i++) {
-    delete graphics[i];
-   }
+   i = graphicsQuantity - 1;
+   Graphic grc(horizFrom, horizTo, horizStep, Y, breakPoints, bpq, color);
+   grcs[i] = grc;
+
+   grcs[i].setXTranslationAddition(xNegativeAxeEnd);
+   grcs[i].setXStretchFactor(xScale);
+   grcs[i].setYTranslationAddition(yNegativeAxeEnd);
+   grcs[i].setYStretchFactor(-yScale);
+
+   grcs[i].plot();
    if (oldGraphicsQuantity > 0) {
     delete [] graphics;
    }
    graphics = grcs;
   }
-  unsigned deleteGraphic(unsigned i) {
-   if (i >= graphicsQuantity) {
-    printf("Graphic #%d does not exist or has already been deleted\n", i);
+  unsigned deleteGraphic(unsigned n) {
+   if (n >= graphicsQuantity) {
+    printf("Graphic #%d does not exist or has already been deleted\n", n);
     getch();
     return 0;
    }
-   delete graphics[i];
-   graphicsQuantity = Graphic::getGraphicsQuantity();
+   Graphic *grcs = new Graphic[graphicsQuantity - 1];
+   for (unsigned i = 0; i < n; i++) {
+    grcs[i] = graphics[i];
+   }
+   for (i = n + 1; i < graphicsQuantity; i++) {
+    grcs[i] = graphics[i];
+   }
+   delete [] graphics;
+   graphicsQuantity--;
+   graphics = grcs;
+
    return 1;
   }
   unsigned deleteAllGraphics() {
-   for (unsigned i = 0; i < graphicsQuantity; i++) {
-    delete graphics[i];
-   }
    delete [] graphics;
    return (Graphic::getGraphicsQuantity() == 0);
   }
-  Graphic** getGraphics() {
+  Graphic* getGraphics() {
    return graphics;
   }
-  Graphic* getGraphic(unsigned i) {
+  Graphic& getGraphic(unsigned i) {
    return graphics[i];
   }
   double getScaleFactor() {
    double maxScaleFactor = 3.4e-308;
    for (unsigned i = 0; i < Graphic::getGraphicsQuantity(); i++) {
-    if (graphics[i]->getScaleFactor() > maxScaleFactor) {
-     maxScaleFactor = graphics[i]->getScaleFactor();
+    if (graphics[i].getScaleFactor() > maxScaleFactor) {
+     maxScaleFactor = graphics[i].getScaleFactor();
     }
    }
    return maxScaleFactor;
@@ -386,8 +386,8 @@ class Plane2D {
    double minStep = 3.4e+308, step, *Y;
    unsigned grValuesQuantity;
    for (unsigned i = 0; i < graphicsQuantity; i++) {
-    grValuesQuantity = graphics[i]->getValuesQuantity();
-    Y = graphics[i]->getY();
+    grValuesQuantity = graphics[i].getValuesQuantity();
+    Y = graphics[i].getY();
     for (unsigned j = 0; j < grValuesQuantity; j++) {
      for (unsigned k = j + 1; k < grValuesQuantity; k++) {
       step = fabs(Y[k] - Y[j]);
@@ -411,18 +411,15 @@ class Plane2D {
    drawAxes(axesColor);
    double xScale = calculateXScale(), yScale = calculateYScale();
    for (unsigned i = 0; i < Graphic::getGraphicsQuantity(); i++) {
-    graphics[i]->setXTranslationAddition(xNegativeAxeEnd);
-    graphics[i]->setXStretchFactor(xScale);
-    graphics[i]->setYTranslationAddition(yNegativeAxeEnd);
-    graphics[i]->setYStretchFactor(-yScale);
+    graphics[i].setXTranslationAddition(xNegativeAxeEnd);
+    graphics[i].setXStretchFactor(xScale);
+    graphics[i].setYTranslationAddition(yNegativeAxeEnd);
+    graphics[i].setYStretchFactor(-yScale);
 
-    graphics[i]->plot();
+    graphics[i].plot();
    }
   }
   ~Plane2D() {
-   for (unsigned i = 0; i < graphicsQuantity; i++) {
-    delete graphics[i];
-   }
    delete [] graphics;
   }
 };

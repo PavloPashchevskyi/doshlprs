@@ -35,6 +35,9 @@ class GControl {
     gManager->redraw();
    } while (c != 27);
   }
+  ~GControl() {
+   delete gManager;
+  }
 };
 
 #endif

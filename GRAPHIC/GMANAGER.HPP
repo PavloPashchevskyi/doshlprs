@@ -14,28 +14,28 @@ class GManager {
    plane2D->setXFrom(plane2D->getXFrom() - plane2D->getXStep());
    plane2D->setXTo(plane2D->getXTo() - plane2D->getXStep());
    for (unsigned i = 0; i < plane2D->getGraphicsQuantity(); i++) {
-    plane2D->getGraphic(i)->moveLeft();
+    plane2D->getGraphic(i).moveLeft();
    }
   }
   void moveRight() {
    plane2D->setXFrom(plane2D->getXFrom() + plane2D->getXStep());
    plane2D->setXTo(plane2D->getXTo() + plane2D->getXStep());
    for (unsigned i = 0; i < plane2D->getGraphicsQuantity(); i++) {
-    plane2D->getGraphic(i)->moveRight();
+    plane2D->getGraphic(i).moveRight();
    }
   }
   void moveUp() {
    plane2D->setXFrom(plane2D->getXFrom() + plane2D->getXStep());
    plane2D->setXTo(plane2D->getXTo() + plane2D->getXStep());
    for (unsigned i = 0; i < plane2D->getGraphicsQuantity(); i++) {
-    plane2D->getGraphic(i)->moveUp();
+    plane2D->getGraphic(i).moveUp();
    }
   }
   void moveDown() {
    plane2D->setXFrom(plane2D->getXFrom() - plane2D->getXStep());
    plane2D->setXTo(plane2D->getXTo() - plane2D->getXStep());
    for (unsigned i = 0; i < plane2D->getGraphicsQuantity(); i++) {
-    plane2D->getGraphic(i)->moveDown();
+    plane2D->getGraphic(i).moveDown();
    }
   }
   void increaseScale() {
@@ -45,7 +45,7 @@ class GManager {
    plane2D->setXTo(newXTo);
    plane2D->setXStep(newXStep);
    for (unsigned i = 0; i < plane2D->getGraphicsQuantity(); i++) {
-    plane2D->getGraphic(i)->increaseScale();
+    plane2D->getGraphic(i).increaseScale();
    }
   }
   void decreaseScale() {
@@ -55,7 +55,7 @@ class GManager {
    plane2D->setXTo(newXTo);
    plane2D->setXStep(newXStep);
    for (unsigned i = 0; i < plane2D->getGraphicsQuantity(); i++) {
-    plane2D->getGraphic(i)->decreaseScale();
+    plane2D->getGraphic(i).decreaseScale();
    }
   }
   void redraw() {

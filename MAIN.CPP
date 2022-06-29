@@ -50,8 +50,9 @@ void buildGraphicalMenu() {
 
 void onGraphicItemSelect() {
  cleardevice();
- Plane2D axes(-3.141593, 3.141593, 0.261799, -1, 1, GREEN, WHITE, 1, 1);
- axes.addGraphic(sin);
+ Plane2D axes(0, 6.28, 0.261799, 0, 3, GREEN, WHITE, 1, 1);
+ axes.addGraphic(sqrt, NULL, 0, RED);
+ axes.addGraphic(sin, NULL, 0, YELLOW);
 
  GManager gm(&axes);
  GControl gc(&gm);
