@@ -58,6 +58,15 @@ class GManager {
     plane2D->getGraphic(i).decreaseScale();
    }
   }
+  unsigned deleteGraphic(unsigned n) {
+   return plane2D->deleteGraphic(n);
+  }
+  void deleteAllGraphics() {
+   unsigned oldGraphicsQuantity = plane2D->getGraphicsQuantity();
+   for (int i = oldGraphicsQuantity - 1; i >= 0; i--) {
+    plane2D->deleteGraphic(i);
+   }
+  }
   void redraw() {
    plane2D->redraw();
   }

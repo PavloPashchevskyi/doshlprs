@@ -53,6 +53,8 @@ void onGraphicItemSelect() {
  Plane2D axes(0, 6.28, 0.261799, 0, 3, GREEN, WHITE, 1, 1);
  axes.addGraphic(sqrt, NULL, 0, RED);
  axes.addGraphic(sin, NULL, 0, YELLOW);
+ double logBPs[1] = {0.00};
+ axes.addGraphic(log10, logBPs, 1, BLUE);
 
  GManager gm(&axes);
  GControl gc(&gm);

@@ -322,17 +322,13 @@ class Plane2D {
     grcs[i] = graphics[i];
    }
    for (i = n + 1; i < graphicsQuantity; i++) {
-    grcs[i] = graphics[i];
+    grcs[i - 1] = graphics[i];
    }
    delete [] graphics;
    graphicsQuantity--;
    graphics = grcs;
 
    return 1;
-  }
-  unsigned deleteAllGraphics() {
-   delete [] graphics;
-   return (Graphic::getGraphicsQuantity() == 0);
   }
   Graphic* getGraphics() {
    return graphics;

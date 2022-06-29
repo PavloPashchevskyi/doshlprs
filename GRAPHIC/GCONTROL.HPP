@@ -31,6 +31,14 @@ class GControl {
      case 115: { // s
       gManager->decreaseScale();
      } break;
+     case 99: { // c
+      gManager->deleteAllGraphics();
+     } break;
+     default: {
+      if (c >= 48 && c <= 57) {
+       gManager->deleteGraphic(c - 48);
+      }
+     } break;
     }
     gManager->redraw();
    } while (c != 27);
