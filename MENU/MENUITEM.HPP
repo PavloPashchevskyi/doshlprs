@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 class MenuItem {
- private:
+ protected:
   char name[40], caption[40];
   unsigned enabled, highlighted, selected;
   void (*onSelect)();
@@ -26,8 +26,10 @@ class MenuItem {
    char caption[40],
    void (*onSelectCB)() = NULL
   ) {
-   strcpy(this->name, name);
-   strcpy(this->caption, caption);
+   strcpy(this->name, "");
+   strcpy(this->caption, "");
+   strcat(this->name, name);
+   strcat(this->caption, caption);
    this->enabled = 1;
    this->highlighted = 0;
    this->selected = 0;
@@ -82,18 +84,22 @@ class MenuItem {
   void setOnSelectAction(void (*callback)() = NULL) {
    this->onSelect = callback;
   }
-  MenuItem(MenuItem &mi) {
-   strcpy(this->name, mi.name);
-   strcpy(this->caption, mi.caption);
+  MenuItem(const MenuItem &mi) {
+   strcpy(this->name, "");
+   strcpy(this->caption, "");
+   strcat(this->name, mi.name);
+   strcat(this->caption, mi.caption);
    this->enabled = mi.enabled;
    this->highlighted = mi.highlighted;
    this->selected = mi.selected;
 
    this->onSelect = mi.onSelect;
   }
-  MenuItem& operator =(MenuItem &mi) {
-   strcpy(this->name, mi.name);
-   strcpy(this->caption, mi.caption);
+  MenuItem& operator =(const MenuItem &mi) {
+   strcpy(this->name, "");
+   strcpy(this->caption, "");
+   strcat(this->name, mi.name);
+   strcat(this->caption, mi.caption);
    this->enabled = mi.enabled;
    this->highlighted = mi.highlighted;
    this->selected = mi.selected;

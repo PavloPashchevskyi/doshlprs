@@ -36,16 +36,15 @@ class Menu {
   }
  public:
   Menu() {
+   this->menuLevel = 1;
    this->itemsQuantity = 1;
    this->menuBackColor = GREEN;
    this->defaultItemColor = WHITE;
    this->highlightedItemColor = YELLOW;
    this->selectedItemColor = RED;
    this->disabledItemColor = LIGHTGRAY;
-   this->menuLevel = 1;
    this->logicalXCoordinate = 120 * menuLevel + 7;
    this->logicalYCoordinate = 0;
-
    items = new MenuItem[itemsQuantity];
   }
   Menu(
@@ -127,7 +126,7 @@ class Menu {
   unsigned getItemsQuantity() {
    return this->itemsQuantity;
   }
-  MenuItem getItem(unsigned itemNo) {
+  MenuItem& getItem(unsigned itemNo) {
    if (itemNo >= itemsQuantity) {
     printf("%d is incorrect number of menu item. It cannot be negative or >= menu items quantity\nMenu items quantity is %d\n", itemNo, itemsQuantity);
     printf("Press any key to halt:");
@@ -136,14 +135,14 @@ class Menu {
    }
    return this->items[itemNo];
   }
-  MenuItem getSelectedItem() {
-   MenuItem si;
+  MenuItem& getSelectedItem() {
+   MenuItem *si = new MenuItem();
    for (unsigned i = 0; i < this->itemsQuantity; i++) {
     if (this->items[i].isSelected()) {
-     si = this->items[i];
+     *si = this->items[i];
     }
    }
-   return si;
+   return *si;
   }
   int getLogicalXCoordinate() {
    return logicalXCoordinate;

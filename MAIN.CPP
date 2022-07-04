@@ -5,47 +5,82 @@
 #include "./GRAPHIC/GCONTROL.HPP"
 
 #include "./MENU/MENU.HPP"
+#include "./MENU/PMITEM.HPP"
 #include "./MENU/MCONTROL.HPP"
 
 #include "./FOREXEC/FOREXEC.HPP"
 #include "./FOREXEC/FEREADER.HPP"
 
+void onAboutItemSelect();
+void onManualItemSelect();
 void onGraphicItemSelect();
 void onYourGraphicItemSelect();
 void onHistogramItemSelect();
 void onGraphicSeparatelyItemSelect();
 
-void onAboutItemSelect() {
- outtextxy(127, 0, "It is the C++ Application for DOS!");
-}
-
-void onSomeItemSelect() {
- outtextxy(127, 7, "This is action on \"Some\" menu item select");
-}
-
 void buildGraphicalMenu() {
  static unsigned i = 0;
  i++;
  MenuItem items[] = {
-  MenuItem("about", "About"),
-  MenuItem("some", "Some"),
   MenuItem("graphic", "Graphic"),
   MenuItem("yourgraph", "Your graph"),
-  MenuItem("histogram", "Histogram"),
   MenuItem("graphsep", "Graph only"),
+  MenuItem("histogram", "Histogram"),
+  MenuItem("manual", "Manual"),
+  MenuItem("about", "About"),
   MenuItem("exit", "Exit")
  };
- items[0].setOnSelectAction(onAboutItemSelect);
- items[1].setOnSelectAction(onSomeItemSelect);
- items[2].setOnSelectAction(onGraphicItemSelect);
- items[3].setOnSelectAction(onYourGraphicItemSelect);
- items[4].setOnSelectAction(onHistogramItemSelect);
- items[5].setOnSelectAction(onGraphicSeparatelyItemSelect);
+ items[0].setOnSelectAction(onGraphicItemSelect);
+ items[1].setOnSelectAction(onYourGraphicItemSelect);
+ items[2].setOnSelectAction(onGraphicSeparatelyItemSelect);
+ items[3].setOnSelectAction(onHistogramItemSelect);
+ items[4].setOnSelectAction(onManualItemSelect);
+ items[5].setOnSelectAction(onAboutItemSelect);
  Menu grMenu(items, 7);
  grMenu.show();
  if (i < 2) {
-  MControl ctrl(grMenu);
+  MControl ctrl(&grMenu);
  }
+}
+
+void onAboutItemSelect() {
+ cleardevice();
+ buildGraphicalMenu();
+ outtextxy(127, 8, "DOS Helpers are the modules for using in another applications, written with C++ for DOS.");
+ outtextxy(127, 16, "ATTENTION! For working of these DOS helpers driver \"EGAVGA.BGI\" by (c) Borland International, Inc is required. It is in repository. Please, do not replace to another folder or remove it!");
+ outtextxy(127, 24, "Modules provides such elements of GUI application as the following.");
+ outtextxy(127, 32, " - Graphical vertical menu (\"MENU\" folder)");
+ outtextxy(127, 40, " - Function(s) graphic(s) plotter (\"GRAPHIC\" folder)");
+ outtextxy(127, 48, " - Histogram plotter (\"GRAPHIC\" folder)");
+ outtextxy(127, 56, " - Executing the formula, written with C language as value, returned from C function (\"FOREXEC\" folder). GCC is required for this.");
+ outtextxy(127, 64, "These modules are written by Pavlo Pashchevskyi (mailto://googalltooth@gmail.com) and free to use by anyone, who wants to write GUI applications for DOS with C and/or C++ language.");
+ outtextxy(127, 72, "If you have any questions or suggestions regarding these modules, please, contact me by email.");
+}
+
+void onManualItemSelect() {
+ cleardevice();
+ buildGraphicalMenu();
+ outtextxy(127, 8, "MENU");
+ outtextxy(127, 16, "Graphical vertical menu.");
+ outtextxy(127, 24, "Use arrows up and down to walk this menu.");
+ outtextxy(127, 32, "To select menu item press \"Enter\".");
+ outtextxy(127, 40, "To exit program, select \"Exit\" item in main menu or press \"esc\", if you are not in popup menu.");
+ outtextxy(127, 48, "If you are in popup menu, press \"esc\" to return to previous menu.");
+ outtextxy(127, 56, "GRAPHIC");
+ outtextxy(127, 64, "If you are selected \"Graphic\" menu item");
+ outtextxy(127, 72, " - press keys from 0 to 9 to delete graphic from plane, which number is from 1 to 10.");
+ outtextxy(127, 80, " - press key \"c\" to delete all graphics from plane.");
+ outtextxy(127, 88, " - press arrow left/right to move graphic(s) left/right");
+ outtextxy(127, 96, " - press arrow down/up to move graphic(s) left/right");
+ outtextxy(127, 104, " - press w key to increase scale (zoom in twice)");
+ outtextxy(127, 116, " - press s key to decrease scale (unzoom twice)");
+ outtextxy(127, 124, " - press \"esc\" to return to menu");
+ outtextxy(127, 132, "Known issue: when you try to move graphic or zoom/unzoom and press appropriate button firstly, press it again. When you press firstly, axes are written and drawn wrongly.");
+}
+
+
+double invertProp(double x) {
+ return 1. / x;
 }
 
 void onGraphicItemSelect() {
@@ -55,6 +90,7 @@ void onGraphicItemSelect() {
  axes.addGraphic(sin, NULL, 0, YELLOW);
  double logBPs[1] = {0.00};
  axes.addGraphic(log10, logBPs, 1, BLUE);
+ axes.addGraphic(invertProp, logBPs, 1, MAGENTA);
 
  GManager gm(&axes);
  GControl gc(&gm);
@@ -153,7 +189,7 @@ void onGraphicSeparatelyItemSelect() {
  cleardevice();
 
  double X[] = {-M_PI,-5*M_PI/6,-2*M_PI/3,-M_PI/2,-M_PI/3,-M_PI/4,-M_PI/6,0,M_PI/6,M_PI/4,M_PI/3,M_PI/2,2*M_PI/3,5*M_PI/6,M_PI};
- Graphic grSep(X, sin, 15/*, tanBreakPoints, 1*/);
+ Graphic grSep(X, sin, 15);
  grSep.setXTranslationAddition(319.);
  grSep.setXStretchFactor(78.875);
  grSep.setYTranslationAddition(239.);
