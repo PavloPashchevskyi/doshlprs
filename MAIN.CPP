@@ -5,7 +5,6 @@
 #include "./GRAPHIC/GCONTROL.HPP"
 
 #include "./MENU/MENU.HPP"
-#include "./MENU/PMITEM.HPP"
 #include "./MENU/MCONTROL.HPP"
 
 #include "./FOREXEC/FOREXEC.HPP"
