@@ -10,12 +10,15 @@
 #include "./FOREXEC/FOREXEC.HPP"
 #include "./FOREXEC/FEREADER.HPP"
 
+#include <dos.h>
+
 void onAboutItemSelect();
 void onManualItemSelect();
 void onGraphicItemSelect();
 void onYourGraphicItemSelect();
 void onHistogramItemSelect();
 void onGraphicSeparatelyItemSelect();
+void onSoundItemSelect();
 
 void buildGraphicalMenu() {
  static unsigned i = 0;
@@ -25,6 +28,7 @@ void buildGraphicalMenu() {
   MenuItem("yourgraph", "Your graph"),
   MenuItem("graphsep", "Graph only"),
   MenuItem("histogram", "Histogram"),
+  MenuItem("sound", "Sound"),
   MenuItem("manual", "Manual"),
   MenuItem("about", "About"),
   MenuItem("exit", "Exit")
@@ -33,9 +37,10 @@ void buildGraphicalMenu() {
  items[1].setOnSelectAction(onYourGraphicItemSelect);
  items[2].setOnSelectAction(onGraphicSeparatelyItemSelect);
  items[3].setOnSelectAction(onHistogramItemSelect);
- items[4].setOnSelectAction(onManualItemSelect);
- items[5].setOnSelectAction(onAboutItemSelect);
- Menu grMenu(items, 7);
+ items[4].setOnSelectAction(onSoundItemSelect);
+ items[5].setOnSelectAction(onManualItemSelect);
+ items[6].setOnSelectAction(onAboutItemSelect);
+ Menu grMenu(items, 8);
  grMenu.show();
  if (i < 2) {
   MControl ctrl(&grMenu);
@@ -200,6 +205,17 @@ void onGraphicSeparatelyItemSelect() {
   cleardevice();
   buildGraphicalMenu();
  }
+}
+
+void onSoundItemSelect() {
+ cleardevice();
+
+ sound(1250);
+ delay(1000);
+ nosound();
+
+ cleardevice();
+ buildGraphicalMenu();
 }
 
 int main() {
