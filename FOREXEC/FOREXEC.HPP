@@ -1,20 +1,10 @@
 #ifndef FOREXEC_HPP
 #define FOREXEC_HPP
 
-#include <string.h>
-#include <stdio.h>
-#include <conio.h>
-#include <process.h>
-#include <stdlib.h>
+#include "./FOREXEC/EXECUTOR.HPP"
 
-class ForExec {
- private:
-  char filesDir[116];
-  char execSourcePath[128];
-  char execObjectPath[128];
-  char execCommandPath[128];
-  char expression[128];
-
+class ForExec : public Executor {
+ protected:
   void saveBeforeExecute() {
    char source[1119]; //1099
    strcpy(source, "");
@@ -60,71 +50,13 @@ class ForExec {
    fclose(f);
   }
 
-  int callCompiler() {
-   char commandText[69];
-   strcpy(commandText, "");
-   sprintf(commandText, "gcc -x c -std=c90 -c %s -o %s", this->execSourcePath, this->execObjectPath);
-   int result = system(commandText);
-   if (result == -1) {
-    printf("ERROR#%d: Unable to compile the %s file\n%s\n",
-     errno,
-     this->execSourcePath,
-     sys_errlist[errno]
-    );
-   }
-
-   return result;
-  }
-
-  int callLinker() {
-   char commandText[70];
-   strcpy(commandText, "");
-   sprintf(commandText, "gcc -std=c90 %s -o %s", this->execObjectPath, this->execCommandPath);
-   int result = system(commandText);
-   if (result == -1) {
-    printf(
-     "ERROR#%d: Unable to link command %s\n%s\n",
-      errno,
-      this->execCommandPath,
-      sys_errlist[errno]
-    );
-   }
-
-   return result;
-  }
-
- public:
-  ForExec(char strFilesDir[116]) {
-   strcpy(this->filesDir, strFilesDir);
-   strcpy(this->execSourcePath, this->filesDir);
-   strcpy(this->execObjectPath, this->filesDir);
-   strcpy(this->execCommandPath, this->filesDir);
-   int filesDirLength = strlen(this->filesDir);
-   if(this->filesDir[filesDirLength - 1] != '\\') {
-    strcat(this->filesDir, "\\");
-   }
-   strcat(this->execSourcePath, "FOREXECR.C");
-   strcat(this->execObjectPath, "FOREXECR.O");
-   strcat(this->execCommandPath, "FOREXECR.EXE");
-  }
-  char* getFilesDirectory() {
-   return this->filesDir;
-  }
-  void setFormula(char expression[128]) {
-   int exprLength = strlen(expression);
-   if (expression[exprLength - 1] != ';') {
-    strcat(expression, ";");
-   }
-   strcpy(this->expression, expression);
-  }
-  int execute(double from, double to, double step, double *breakPoints = NULL, unsigned bpq = 0) {
-   this->saveBeforeExecute();
-   int result = this->callCompiler();
-   if (result == -1) {
-    printf("Unable to create command, executing the formula\n");
-    return result;
-   }
-   result = this->callLinker();
+  int callWrittenProgram(
+   double from,
+   double to,
+   double step,
+   double *breakPoints = NULL,
+   unsigned bpq = 0
+  ) {
    char *commandText = new char[81 + 18 * bpq + bpq], breakPoint[19];
    sprintf(commandText, "%s %f %f %f", this->execCommandPath, from, to, step);
    if (bpq > 0) {
@@ -137,7 +69,7 @@ class ForExec {
      }
     }
    }
-   result = system(commandText);
+   int result = system(commandText);
    delete [] commandText;
    if (result == -1) {
     printf(
@@ -149,9 +81,14 @@ class ForExec {
       sys_errlist[errno]
     );
    }
-
    return result;
   }
+ public:
+  ForExec(char strFilesDir[116], char fileNameBeforeExtension[9]) :
+   Executor(strFilesDir, fileNameBeforeExtension) {
+   }
+   ~ForExec() {
+   }
 };
 
 #endif

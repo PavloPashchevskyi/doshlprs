@@ -137,9 +137,9 @@ void onYourGraphicItemSelect() {
 
  cleardevice();
 
- ForExec fe(".\\forexec\\");
- fe.setFormula(expression);
- fe.execute(from, to, step, breakPoints, breakPointsQuantity);
+ Executor *fe = new ForExec(".\\forexec\\", "forexecr");
+ fe->setFormula(expression);
+ fe->execute(from, to, step, breakPoints, breakPointsQuantity);
 
  FEReader fer(".\\fe_res.txt");
 
@@ -152,6 +152,7 @@ void onYourGraphicItemSelect() {
 
  c = getch();
  if (c == 27) {
+  delete fe;
   cleardevice();
   buildGraphicalMenu();
  }
