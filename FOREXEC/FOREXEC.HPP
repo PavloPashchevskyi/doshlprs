@@ -49,40 +49,6 @@ class ForExec : public Executor {
    fprintf(f, "%s", source);
    fclose(f);
   }
-
-  int callWrittenProgram(
-   double from,
-   double to,
-   double step,
-   double *breakPoints = NULL,
-   unsigned bpq = 0
-  ) {
-   char *commandText = new char[81 + 18 * bpq + bpq], breakPoint[19];
-   sprintf(commandText, "%s %f %f %f", this->execCommandPath, from, to, step);
-   if (bpq > 0) {
-    strcat(commandText, " ");
-    for (unsigned i = 0; i < bpq; i++) {
-     sprintf(breakPoint, "%f", breakPoints[i]);
-     strcat(commandText, breakPoint);
-     if (i < bpq - 1) {
-      strcat(commandText, " ");
-     }
-    }
-   }
-   int result = system(commandText);
-   delete [] commandText;
-   if (result == -1) {
-    printf(
-     "ERROR#%d: Unable to execute the formula for range [%f; %f] with step %f\n%s\n",
-      errno,
-      from,
-      to,
-      step,
-      sys_errlist[errno]
-    );
-   }
-   return result;
-  }
  public:
   ForExec(char strFilesDir[116], char fileNameBeforeExtension[9]) :
    Executor(strFilesDir, fileNameBeforeExtension) {

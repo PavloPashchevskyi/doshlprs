@@ -44,6 +44,41 @@ class Executor {
    return result;
   }
 
+  int callWrittenProgram(
+   double from,
+   double to,
+   double step,
+   double *additionals = NULL,
+   unsigned additionalsQuantity = 0
+  ) {
+   int aq = additionalsQuantity;
+   char *commandText = new char[81 + 18 * aq + aq], additional[19];
+   sprintf(commandText, "%s %f %f %f", this->execCommandPath, from, to, step);
+   if (aq > 0) {
+    strcat(commandText, " ");
+    for (unsigned i = 0; i < aq; i++) {
+     sprintf(additional, "%f", additionals[i]);
+     strcat(commandText, additional);
+     if (i < aq - 1) {
+      strcat(commandText, " ");
+     }
+    }
+  }
+  int result = system(commandText);
+  delete [] commandText;
+  if (result == -1) {
+   printf(
+    "ERROR#%d: Unable to execute the formula for range [%f; %f] with step %f\n%s\n",
+    errno,
+    from,
+    to,
+    step,
+    sys_errlist[errno]
+   );
+  }
+   return result;
+  }
+
  protected:
   char filesDir[116];
   char fileNameBeforeExtension[9];
@@ -53,13 +88,6 @@ class Executor {
   char expression[128];
 
   virtual void saveBeforeExecute() = 0;
-  virtual int callWrittenProgram(
-   double from,
-   double to,
-   double step,
-   double *additionals = NULL,
-   unsigned additionalsQuantity = 0
-  ) = 0;
 
  public:
   Executor(char strFilesDir[116], char fileNameBeforeExtension[9]) {
