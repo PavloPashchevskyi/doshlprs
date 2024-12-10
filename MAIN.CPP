@@ -17,6 +17,7 @@ void onManualItemSelect();
 void onGraphicItemSelect();
 void onYourGraphicItemSelect();
 void onHistogramItemSelect();
+void onHistogramOnPlane2DItemSelect();
 void onGraphicSeparatelyItemSelect();
 void onSoundItemSelect();
 
@@ -28,6 +29,7 @@ void buildGraphicalMenu() {
   MenuItem("yourgraph", "Your graph"),
   MenuItem("graphsep", "Graph only"),
   MenuItem("histogram", "Histogram"),
+  MenuItem("histogram_on_plane_2d", "Histogram2"),
   MenuItem("sound", "Sound"),
   MenuItem("manual", "Manual"),
   MenuItem("about", "About"),
@@ -37,10 +39,11 @@ void buildGraphicalMenu() {
  items[1].setOnSelectAction(onYourGraphicItemSelect);
  items[2].setOnSelectAction(onGraphicSeparatelyItemSelect);
  items[3].setOnSelectAction(onHistogramItemSelect);
- items[4].setOnSelectAction(onSoundItemSelect);
- items[5].setOnSelectAction(onManualItemSelect);
- items[6].setOnSelectAction(onAboutItemSelect);
- Menu grMenu(items, 8);
+ items[4].setOnSelectAction(onHistogramOnPlane2DItemSelect);
+ items[5].setOnSelectAction(onSoundItemSelect);
+ items[6].setOnSelectAction(onManualItemSelect);
+ items[7].setOnSelectAction(onAboutItemSelect);
+ Menu grMenu(items, 9);
  grMenu.show();
  if (i < 2) {
   MControl ctrl(&grMenu);
@@ -158,25 +161,28 @@ void onYourGraphicItemSelect() {
 }
 
 double sample(char *x) {
- if (strcmp(x, "Зеленский") == 0) {
-  return 33.33333333333333333;
+ if (strcmp(x, "Кучма") == 0) {
+  return 67.50;
  }
- if (strcmp(x, "Порошенко") == 0) {
-  return 11.11;
+ if (strcmp(x, "Симоненко") == 0) {
+  return 3.125;
  }
  if (strcmp(x, "Тимошенко") == 0) {
-  return 11.05;
+  return 12.50;
  }
- if (strcmp(x, "Смешко") == 0) {
-  return 11.17;
+ if (strcmp(x, "Ткаченко") == 0) {
+  return 8.4325;
  }
- return 7.45;
+ if (strcmp(x, "Кравчук") == 0) {
+  return 8.4325;
+ }
+ return 6.25;
 }
 
 void onHistogramItemSelect() {
  cleardevice();
- unsigned valuesCount = 4;
- char values[][40] = {"Зеленский", "Порошенко", "Тимошенко", "Смешко"};
+ unsigned valuesCount = 5;
+ char values[][40] = {"Кучма","Симоненко","Тимошенко","Ткаченко","Кравчук"};
 
  PlaneHis *planeHistogram;
  planeHistogram = new PlaneHis(valuesCount, values, sample, WHITE);
@@ -184,6 +190,24 @@ void onHistogramItemSelect() {
 
  char c = getch();
  if (c == 27) {
+  cleardevice();
+  buildGraphicalMenu();
+ }
+}
+
+void onHistogramOnPlane2DItemSelect() {
+ cleardevice();
+ unsigned valuesCount = 5;
+ char values[][40] = {"Кучма","Симоненко","Тимошенко","Ткаченко","Кравчук"};
+
+ Plane2D *axes = new Plane2D(0,valuesCount,1,0,100,GREEN,WHITE,0,0,"","%",0);
+ axes->buildHistogram(valuesCount, values, sample, WHITE);
+
+ char c = getch();
+ if (c == 27) {
+
+  delete axes;
+
   cleardevice();
   buildGraphicalMenu();
  }

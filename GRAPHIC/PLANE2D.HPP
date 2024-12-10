@@ -8,16 +8,19 @@
 #include <graphics.h>
 
 #include "./GRAPHIC/GRAPHIC.HPP"
+#include "./GRAPHIC/PLANEHIS.HPP"
 
 class Plane2D {
  private:
   double horizFrom, horizTo, horizStep, verticalFrom, verticalTo;
   int xTailPresent, yTailPresent;
+  unsigned writeHorizontalAxe;
   double samplingFreqFactor, quantStepFactor;
   char horizontalAxeName[2], verticalAxeName[7];
   static const int axeTagsMargin;
   static const double accuracy;
   Graphic *graphics;
+  PlaneHis *histogram;
   unsigned graphicsQuantity;
 
   void drawAxes(int color) {
@@ -68,6 +71,48 @@ class Plane2D {
   }
   void writeAxes(
    int tagsAndGridColor,
+   char *horizontalAxeTags[46],
+   char *verticalAxeTags[46],
+   int axesTagsQuantity,
+   char horizontalAxeName[2] = "X",
+   char verticalAxeName[7] = "Y"
+  ) {
+   char strStep[46];
+   double h, verticalStep = (verticalTo - verticalFrom) / axesTagsQuantity;
+   if (tagsAndGridColor==getbkcolor() || tagsAndGridColor==this->axesColor) {
+    printf("Tags and/or grid color must NOT be the same as background color or the axes one\n");
+    getch();
+    exit(1);
+   }
+   setcolor(tagsAndGridColor);
+   outtextxy(
+    getmaxx() - Plane2D::axeTagsMargin,
+    toYScreenCoordinate(0),
+    horizontalAxeName
+   );
+   outtextxy(toXScreenCoordinate(0), 0, verticalAxeName);
+   strcpy(strStep, "");
+   if (writeHorizontalAxe) {
+    for (int i = 0; i < axesTagsQuantity; i++) {
+     sprintf(strStep, "%s", horizontalAxeTags[i]);
+     outtextxy(
+      toXScreenCoordinate(i) - Plane2D::axeTagsMargin,
+      toYScreenCoordinate(0),
+      (i == 0) ? "0" : strStep
+     );
+    }
+   }
+   for (int i = 0; i < axesTagsQuantity; i++) {
+    sprintf(strStep, "%s", verticalAxeTags[i]);
+    outtextxy(
+     toXScreenCoordinate(0),
+     toYScreenCoordinate(i) - Plane2D::axeTagsMargin,
+     (i == 0) ? "" : strStep
+    );
+   }
+  }
+  void writeAxes(
+   int tagsAndGridColor,
    double samplingFreq,
    double quantStep,
    char horizontalAxeName[2] = "X",
@@ -89,13 +134,15 @@ class Plane2D {
    );
    outtextxy(toXScreenCoordinate(0), 0, verticalAxeName);
    strcpy(strStep, "");
-   for (h = horizFrom; h <= horizTo; h += 2 * horizStep) {
-    sprintf(strStep, "%3.2f", h);
-    outtextxy(
-     toXScreenCoordinate(h) - Plane2D::axeTagsMargin,
-     toYScreenCoordinate(0),
-     (fabs(h) < Plane2D::accuracy) ? "0" : strStep
-    );
+   if (writeHorizontalAxe) {
+    for (h = horizFrom; h <= horizTo; h += 2 * horizStep) {
+     sprintf(strStep, "%3.2f", h);
+     outtextxy(
+      toXScreenCoordinate(h) - Plane2D::axeTagsMargin,
+      toYScreenCoordinate(0),
+      (fabs(h) < Plane2D::accuracy) ? "0" : strStep
+     );
+    }
    }
    for (h = verticalFrom; h <= verticalTo; h += 2 * verticalStep) {
     sprintf(strStep, "%3.2f", h);
@@ -157,7 +204,8 @@ class Plane2D {
    double samplingFreqFactor = 0,
    double quantStepFactor = 0,
    char horizontalAxeName[2] = "X",
-   char verticalAxeName[7] = "Y"
+   char verticalAxeName[7] = "Y",
+   unsigned writeHorizontalAxe = 1
   ) {
    GrMode::initGraphicalMode();
    horizFrom = xFrom;
@@ -186,6 +234,7 @@ class Plane2D {
    this->quantStepFactor = quantStepFactor;
    strcpy(this->horizontalAxeName, horizontalAxeName);
    strcpy(this->verticalAxeName, verticalAxeName);
+   this->writeHorizontalAxe = writeHorizontalAxe;
    drawAxes(this->axesColor);
    writeAxes(
     tagsAndGridColor,
@@ -213,11 +262,13 @@ class Plane2D {
    quantStepFactor = right.quantStepFactor;
    strcpy(horizontalAxeName, right.horizontalAxeName);
    strcpy(verticalAxeName, this->verticalAxeName);
+   writeHorizontalAxe = right.writeHorizontalAxe;
    graphicsQuantity = right.graphicsQuantity;
    graphics = new Graphic[graphicsQuantity];
    for (unsigned i = 0; i < graphicsQuantity; i++) {
     graphics[i] = right.graphics[i];
    }
+   histogram = right.histogram;
   }
   Plane2D& operator=(const Plane2D &right) {
    if (graphicsQuantity > 0) {
@@ -240,13 +291,29 @@ class Plane2D {
    quantStepFactor = right.quantStepFactor;
    strcpy(horizontalAxeName, right.horizontalAxeName);
    strcpy(verticalAxeName, this->verticalAxeName);
+   writeHorizontalAxe = right.writeHorizontalAxe;
    graphicsQuantity = right.graphicsQuantity;
    graphics = new Graphic[graphicsQuantity];
    for (unsigned i = 0; i < graphicsQuantity; i++) {
     graphics[i] = right.graphics[i];
    }
+   histogram = right.histogram;
 
    return *this;
+  }
+  void buildHistogram(
+   unsigned axesTagsQuantity,
+   char horizontalAxeTags[][40],
+   double (*h)(char *x),
+   int tagsColor = WHITE
+  ) {
+   double xScale = calculateXScale(), yScale = calculateYScale();
+   histogram = new PlaneHis(axesTagsQuantity, horizontalAxeTags, h, tagsColor);
+   histogram->setXTranslationAddition(xNegativeAxeEnd+Plane2D::axesMargin/2.);
+   histogram->setYTranslationAddition(yNegativeAxeEnd-Plane2D::axesMargin/2.);
+   histogram->setYStretchFactor(-yScale);
+
+   histogram->plot();
   }
   void addGraphic(
    double (*f)(double),
@@ -435,6 +502,7 @@ class Plane2D {
   }
   ~Plane2D() {
    delete [] graphics;
+   delete histogram;
   }
 };
 
