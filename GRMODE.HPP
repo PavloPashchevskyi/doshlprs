@@ -9,6 +9,7 @@
 class GrMode {
  private:
   static GrMode *hInstance;
+  static int graphicalModeOpeningResult;
   GrMode() {
    hInstance = 0;
 
@@ -19,11 +20,12 @@ class GrMode {
    initgraph(&gdriver, &gmode, "");
 
    /* read result of initialization */
-   errorcode = graphresult();
+   GrMode::graphicalModeOpeningResult = graphresult();
 
-   if (errorcode != grOk)  /* an error occurred */
+   if (GrMode::graphicalModeOpeningResult != grOk)  /* an error occurred */
    {
-    printf("Graphics error: %s\n", grapherrormsg(errorcode));
+    printf("Graphics error: %s\n",
+     grapherrormsg(GrMode::graphicalModeOpeningResult));
     printf("Press any key to halt:");
     getch();
     exit(1);             /* return with error code */
@@ -36,15 +38,21 @@ class GrMode {
    }
    return GrMode::hInstance;
   }
-  ~GrMode() {
-   closegraph();
-   if (hInstance != 0) {
-    delete GrMode::hInstance;
-    GrMode::hInstance = 0;
+  static GrMode* closeGraphicalModeIfOpened() {
+   if (GrMode::graphicalModeOpeningResult == grOk) {
+    closegraph();
+    if (hInstance != 0) {
+     delete GrMode::hInstance;
+     GrMode::hInstance = 0;
+    }
    }
+   return GrMode::hInstance;
+  }
+  ~GrMode() {
   }
 };
 
 GrMode *GrMode::hInstance;
+int GrMode::graphicalModeOpeningResult = grNoInitGraph;
 
 #endif
