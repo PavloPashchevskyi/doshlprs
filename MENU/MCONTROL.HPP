@@ -43,6 +43,7 @@ class MControl {
     }
     menu->redrawItems();
    } while (strcmp(menu->getSelectedItem().getName(), "exit") != 0);
+   GrMode::closeGraphicalModeIfOpened();
   }
   ~MControl() {
    delete menu;

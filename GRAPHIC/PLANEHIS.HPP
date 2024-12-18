@@ -115,7 +115,6 @@ class PlaneHis : public Plotable {
    }
    delete [] values;
    PlaneHis::histogramsQuantity--;
-   closegraph();
   }
 };
 
