@@ -17,13 +17,13 @@ class Executor {
    sprintf(commandText, "gcc -x c -std=c90 -c %s -o %s", this->execSourcePath, this->execObjectPath);
    int result = system(commandText);
    if (result == -1) {
-    printf("ERROR#%d: Unable to compile the %s file\n%s\n",
+    printf("ERROR#%d: Unable to compile the %s file\n%s\nFailed command:%s\n",
      errno,
      this->execSourcePath,
-     sys_errlist[errno]
+     sys_errlist[errno],
+     commandText
     );
    }
-
    return result;
   }
 
@@ -34,13 +34,13 @@ class Executor {
    int result = system(commandText);
    if (result == -1) {
     printf(
-     "ERROR#%d: Unable to link command %s\n%s\n",
+     "ERROR#%d: Unable to link command %s\n%s\nFailed command:%s\n",
       errno,
       this->execCommandPath,
-      sys_errlist[errno]
+      sys_errlist[errno],
+      commandText
     );
    }
-
    return result;
   }
 
@@ -88,6 +88,32 @@ class Executor {
   char expression[128];
 
   virtual void saveBeforeExecute() = 0;
+
+  static unsigned isFileRecreatingNeeded(char *fileName, char **strings) {
+   unsigned checkingStringsQuantity = 0;
+   while (strcmp(strings[checkingStringsQuantity], "") != 0) {
+    checkingStringsQuantity++;
+   }
+   if (checkingStringsQuantity < 1) {
+    return 0;
+   }
+   FILE *f = fopen(fileName, "rt");
+   if (!f) {
+    return 1;
+   }
+   char *fileTestStr = new char[1820];
+   unsigned matchesQuantity = 0;
+   while ((fgets(fileTestStr, 1820, f)) != NULL) {
+    for (unsigned i = 0; i < checkingStringsQuantity; i++) {
+     if (strstr(fileTestStr, strings[i]) != NULL) {
+      matchesQuantity++;
+     }
+    }
+   }
+   delete [] fileTestStr;
+   fclose(f);
+   return matchesQuantity < checkingStringsQuantity;
+  }
 
  public:
   Executor(char strFilesDir[116], char fileNameBeforeExtension[9]) {
