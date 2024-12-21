@@ -14,8 +14,8 @@ class ForExec : public Executor {
    strcat(includedSourcePath, this->filesDir);
    strcat(includedSourcePath, "F.H");
 
-   char *includedSourceMatches[] = {"return ", this->expression, ""};
-   if (isFileRecreatingNeeded(includedSourcePath, includedSourceMatches)) {
+   char *includedSrcMatches[] = {"{", "return ", this->expression, "}", ""};
+   if (isFileRecreatingNeeded(includedSourcePath, 86, includedSrcMatches)) {
     includedSource = new char[213];
 
     strcpy(includedSource, ""); //0
@@ -35,8 +35,8 @@ class ForExec : public Executor {
     delete [] includedSource;
    }
 
-   char *sourceMatches[] = {"\"F.H\"", " = f(", ""};
-   if (isFileRecreatingNeeded(this->execSourcePath, sourceMatches)) {
+   char *sourceMatches[] = {"\"F.H\"", "{", " = f(", "}", ""};
+   if (isFileRecreatingNeeded(this->execSourcePath, 962, sourceMatches)) {
     source = new char[963];
 
     strcpy(source, ""); //0
