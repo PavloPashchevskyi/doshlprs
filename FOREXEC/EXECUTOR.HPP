@@ -7,42 +7,11 @@
 #include <process.h>
 #include <stdlib.h>
 
-class Executor {
+#include "./FOREXEC/LINKABLE.HPP"
+
+class Executor : public Linkable {
  private:
   char execObjectPath[128];
-
-  int callCompiler() {
-   char commandText[69];
-   strcpy(commandText, "");
-   sprintf(commandText, "gcc -x c -std=c90 -c %s -o %s", this->execSourcePath, this->execObjectPath);
-   int result = system(commandText);
-   if (result == -1) {
-    printf("ERROR#%d: Unable to compile the %s file\n%s\nFailed command:%s\n",
-     errno,
-     this->execSourcePath,
-     sys_errlist[errno],
-     commandText
-    );
-   }
-   return result;
-  }
-
-  int callLinker() {
-   char commandText[70];
-   strcpy(commandText, "");
-   sprintf(commandText, "gcc -std=c90 %s -o %s", this->execObjectPath, this->execCommandPath);
-   int result = system(commandText);
-   if (result == -1) {
-    printf(
-     "ERROR#%d: Unable to link command %s\n%s\nFailed command:%s\n",
-      errno,
-      this->execCommandPath,
-      sys_errlist[errno],
-      commandText
-    );
-   }
-   return result;
-  }
 
   int callWrittenProgram(
    double from,
@@ -88,6 +57,39 @@ class Executor {
   char expression[128];
 
   virtual void saveBeforeExecute() = 0;
+
+  virtual int callCompiler() {
+   char commandText[69];
+   strcpy(commandText, "");
+   sprintf(commandText, "gcc -x c -std=c90 -c %s -o %s", this->execSourcePath, this->execObjectPath);
+   int result = system(commandText);
+   if (result == -1) {
+    printf("ERROR#%d: Unable to compile the %s file\n%s\nFailed command:%s\n",
+     errno,
+     this->execSourcePath,
+     sys_errlist[errno],
+     commandText
+    );
+   }
+   return result;
+  }
+
+  virtual int callLinker() {
+   char commandText[70];
+   strcpy(commandText, "");
+   sprintf(commandText, "gcc -std=c90 %s -o %s", this->execObjectPath, this->execCommandPath);
+   int result = system(commandText);
+   if (result == -1) {
+    printf(
+     "ERROR#%d: Unable to link command %s\n%s\nFailed command:%s\n",
+      errno,
+      this->execCommandPath,
+      sys_errlist[errno],
+      commandText
+    );
+   }
+   return result;
+  }
 
   static unsigned isFileRecreatingNeeded(
    char *fileName,
