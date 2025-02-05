@@ -20,6 +20,7 @@ void onHistogramItemSelect();
 void onHistogramOnPlane2DItemSelect();
 void onGraphicSeparatelyItemSelect();
 void onSoundItemSelect();
+void onHelpItemSelect();
 
 void buildGraphicalMenu() {
  static unsigned i = 0;
@@ -31,8 +32,7 @@ void buildGraphicalMenu() {
   MenuItem("histogram", "Histogram"),
   MenuItem("histogram_on_plane_2d", "Histogram2"),
   MenuItem("sound", "Sound"),
-  MenuItem("manual", "Manual"),
-  MenuItem("about", "About"),
+  MenuItem("help", "Help"),
   MenuItem("exit", "Exit")
  };
  items[0].setOnSelectAction(onGraphicItemSelect);
@@ -41,13 +41,31 @@ void buildGraphicalMenu() {
  items[3].setOnSelectAction(onHistogramItemSelect);
  items[4].setOnSelectAction(onHistogramOnPlane2DItemSelect);
  items[5].setOnSelectAction(onSoundItemSelect);
- items[6].setOnSelectAction(onManualItemSelect);
- items[7].setOnSelectAction(onAboutItemSelect);
- Menu grMenu(items, 9);
+ items[6].setOnSelectAction(onHelpItemSelect);
+ Menu grMenu(items, 8);
  grMenu.show();
  if (i < 2) {
   MControl ctrl(&grMenu);
  }
+}
+
+void buildHelpGraphicalMenu() {
+ static unsigned i = 0;
+ i++;
+
+ MenuItem items[] = {
+  MenuItem("manual", "Manual"),
+  MenuItem("about", "About")
+ };
+ items[0].setOnSelectAction(onManualItemSelect);
+ items[1].setOnSelectAction(onAboutItemSelect);
+ Menu *grPopupMenu = new Menu(items, 2, 2);
+ grPopupMenu->show();
+
+ if (i < 2) {
+  MControl ctrl(grPopupMenu);
+ }
+ delete grPopupMenu;
 }
 
 void onAboutItemSelect() {
@@ -62,6 +80,13 @@ void onAboutItemSelect() {
  outtextxy(127, 56, " - Executing the formula, written with C language as value, returned from C function (\"FOREXEC\" folder). GCC is required for this.");
  outtextxy(127, 64, "These modules are written by Pavlo Pashchevskyi (mailto://googalltooth@gmail.com) and free to use by anyone, who wants to write GUI applications for DOS with C and/or C++ language.");
  outtextxy(127, 72, "If you have any questions or suggestions regarding these modules, please, contact me by email.");
+
+ char c = getch();
+ if (c == 27) {
+  cleardevice();
+  buildGraphicalMenu();
+  buildHelpGraphicalMenu();
+ }
 }
 
 void onManualItemSelect() {
@@ -83,6 +108,13 @@ void onManualItemSelect() {
  outtextxy(127, 116, " - press s key to decrease scale (unzoom twice)");
  outtextxy(127, 124, " - press \"esc\" to return to menu");
  outtextxy(127, 132, "Known issue: when you try to move graphic or zoom/unzoom and press appropriate button firstly, press it again. When you press firstly, axes are written and drawn wrongly.");
+
+ char c = getch();
+ if (c == 27) {
+  cleardevice();
+  buildGraphicalMenu();
+  buildHelpGraphicalMenu();
+ }
 }
 
 
@@ -241,6 +273,16 @@ void onSoundItemSelect() {
 
  cleardevice();
  buildGraphicalMenu();
+}
+
+void onHelpItemSelect() {
+ buildHelpGraphicalMenu();
+
+ char c = getch();
+ if (c == 27) {
+  cleardevice();
+  buildGraphicalMenu();
+ }
 }
 
 int main() {

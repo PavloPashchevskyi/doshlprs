@@ -43,7 +43,9 @@ class MControl {
     }
     menu->redrawItems();
    } while (strcmp(menu->getSelectedItem().getName(), "exit") != 0);
-   GrMode::closeGraphicalModeIfOpened();
+   if (menu->getMenuLevel() < 2) {
+    GrMode::closeGraphicalModeIfOpened();
+   }
   }
   ~MControl() {
    delete menu;

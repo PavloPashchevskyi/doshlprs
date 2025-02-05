@@ -32,7 +32,7 @@ class Menu {
    if (items[itemNo].isSelected()) {
     setcolor(selectedItemColor);
    }
-   outtextxy(menuLevel * 40, 7 + itemNo * 7, items[itemNo].getCaption());
+   outtextxy(120*(menuLevel-1)+40, 7+itemNo*7, items[itemNo].getCaption());
   }
  public:
   Menu() {
@@ -125,6 +125,9 @@ class Menu {
   }
   unsigned getItemsQuantity() {
    return this->itemsQuantity;
+  }
+  unsigned getMenuLevel() {
+   return menuLevel;
   }
   MenuItem& getItem(unsigned itemNo) {
    if (itemNo >= itemsQuantity) {
