@@ -1,15 +1,15 @@
 #ifndef EXECUTOR_HPP
 #define EXECUTOR_HPP
 
-#include <string.h>
-#include <stdio.h>
 #include <conio.h>
-#include <process.h>
 #include <stdlib.h>
 
+#include "./FOREXEC/FCHECKER.HPP"
 #include "./FOREXEC/LINKABLE.HPP"
 
-class Executor : public Linkable {
+#include "./CONFIG.HPP"
+
+class Executor : public FChecker, public Linkable {
  private:
   char execObjectPath[128];
 
@@ -61,7 +61,7 @@ class Executor : public Linkable {
   virtual int callCompiler() {
    char commandText[69];
    strcpy(commandText, "");
-   sprintf(commandText, "gcc -x c -std=c90 -c %s -o %s", this->execSourcePath, this->execObjectPath);
+   sprintf(commandText, "%s -x c -std=c90 -c %s -o %s", Config::FORMULA_EXECUTOR_COMPILER_PATH, this->execSourcePath, this->execObjectPath);
    int result = system(commandText);
    if (result == -1) {
     printf("ERROR#%d: Unable to compile the %s file\n%s\nFailed command:%s\n",
@@ -77,7 +77,7 @@ class Executor : public Linkable {
   virtual int callLinker() {
    char commandText[70];
    strcpy(commandText, "");
-   sprintf(commandText, "gcc -std=c90 %s -o %s", this->execObjectPath, this->execCommandPath);
+   sprintf(commandText, "%s -std=c90 %s -o %s", Config::FORMULA_EXECUTOR_LINKER_PATH, this->execObjectPath, this->execCommandPath);
    int result = system(commandText);
    if (result == -1) {
     printf(
@@ -89,41 +89,6 @@ class Executor : public Linkable {
     );
    }
    return result;
-  }
-
-  static unsigned isFileRecreatingNeeded(
-   char *fileName,
-   unsigned minFileSize,
-   char **strings
-  ) {
-   unsigned checkingStringsQuantity = 0;
-   while (strcmp(strings[checkingStringsQuantity], "") != 0) {
-    checkingStringsQuantity++;
-   }
-   if (checkingStringsQuantity < 1) {
-    return 0;
-   }
-   FILE *f = fopen(fileName, "rt");
-   if (!f) {
-    return 1;
-   }
-   char *fileTestStr = new char[1820];
-   unsigned matchesQuantity = 0;
-   unsigned symbolsQuantity = 0;
-   while ((fgets(fileTestStr, 1820, f)) != NULL) {
-    symbolsQuantity += strlen(fileTestStr);
-    for (unsigned i = 0; i < checkingStringsQuantity; i++) {
-     if (strstr(fileTestStr, strings[i]) != NULL) {
-      matchesQuantity++;
-     }
-    }
-   }
-   delete [] fileTestStr;
-   fclose(f);
-   if (symbolsQuantity < minFileSize) {
-    return 1;
-   }
-   return matchesQuantity < checkingStringsQuantity;
   }
 
  public:
