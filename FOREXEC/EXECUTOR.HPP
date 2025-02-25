@@ -59,9 +59,10 @@ class Executor : public FChecker, public Linkable {
   virtual void saveBeforeExecute() = 0;
 
   virtual int callCompiler() {
-   char commandText[69];
-   strcpy(commandText, "");
-   sprintf(commandText, "%s -x c -std=c90 -c %s -o %s", Config::FORMULA_EXECUTOR_COMPILER_PATH, this->execSourcePath, this->execObjectPath);
+   char *commandText = Config::getFormulaExecutorCompilerCommandText(
+    this->execSourcePath,
+    this->execObjectPath
+   );
    int result = system(commandText);
    if (result == -1) {
     printf("ERROR#%d: Unable to compile the %s file\n%s\nFailed command:%s\n",
@@ -75,9 +76,10 @@ class Executor : public FChecker, public Linkable {
   }
 
   virtual int callLinker() {
-   char commandText[70];
-   strcpy(commandText, "");
-   sprintf(commandText, "%s -std=c90 %s -o %s", Config::FORMULA_EXECUTOR_LINKER_PATH, this->execObjectPath, this->execCommandPath);
+   char *commandText = Config::getFormulaExecutorLinkerCommandText(
+    this->execObjectPath,
+    this->execCommandPath
+   );
    int result = system(commandText);
    if (result == -1) {
     printf(
