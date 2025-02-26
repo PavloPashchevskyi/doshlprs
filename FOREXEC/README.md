@@ -1,6 +1,8 @@
 Class "ForExec" (FormulaExecutor) is designed for formula, input by user with C language syntax, to be "understood" by another parts of your project. Class "ForExec" passes formula from user and the range of values formula should be applied on. The results of appying are saving to file "FE_RES.TXT" in directory, where you put folder with this file (one step back from directory with this file). You can use the results from "FE_RES.TXT" in any other part of your project.
 
-To use "ForExec" class you should do the following.
+To use "ForExec" class you should configure your project. For this, you should rename the "__CONFIG.HPP" file (one step back from directory with this file) to "CONFIG.HPP" and write to constants there the paths to your compiler and linker and options of commands to run them. See "README.md" one step back from directory with this file for details.
+
+You can install DJGPP. It is GCC for DOS. To install it, please, do the following.
 
 1. Installing of GCC on your DOS (or DOSBox).
 

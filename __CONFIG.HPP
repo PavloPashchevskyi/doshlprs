@@ -46,8 +46,8 @@ class Config {
   }
 };
 
-const char* Config::FORMULA_EXECUTOR_COMPILER_PATH = "gcc";
-const char* Config::FORMULA_EXECUTOR_LINKER_PATH = "gcc";
+const char* Config::FORMULA_EXECUTOR_COMPILER_PATH = "c:\\compile\\djgpp\\bin\\gcc";
+const char* Config::FORMULA_EXECUTOR_LINKER_PATH = "c:\\compile\\djgpp\\bin\\gcc";
 const char* Config::FORMULA_LINKER_COMPILER_PATH =
  "c:\\compile\\bc\\bin\\bcc.exe";
 const char* Config::FORMULA_LINKER_LINKER_PATH =
